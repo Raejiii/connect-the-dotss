@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX, SkipForward } from "lucide-react"
 import confetti from "canvas-confetti"
-import gameConfig from "../config/game-config.json"
+import { gameConfig } from "../config/game-config"
 
 export function ConnectTheDotsGame() {
   const [showSplash, setShowSplash] = useState(true)
@@ -22,6 +22,10 @@ export function ConnectTheDotsGame() {
   const [isShapeComplete, setIsShapeComplete] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
   const [startDot, setStartDot] = useState(null)
+  const [currentLevel, setCurrentLevel] = useState(1)
+  const [totalLevels] = useState(gameConfig.shapes.length)
+  const [difficulty, setDifficulty] = useState("all") // "easy", "medium", "hard", "all"
+  const [filteredShapes, setFilteredShapes] = useState(gameConfig.shapes)
   const audioRefs = useRef({})
   const gameAreaRef = useRef(null)
   const svgRef = useRef(null)
@@ -63,6 +67,15 @@ export function ConnectTheDotsGame() {
     }
   }, [gameState, isMuted])
 
+  // Update filtered shapes when difficulty changes
+  useEffect(() => {
+    if (difficulty === "all") {
+      setFilteredShapes(gameConfig.shapes)
+    } else {
+      setFilteredShapes(gameConfig.shapes.filter((shape) => shape.difficulty === difficulty))
+    }
+  }, [difficulty])
+
   const playAudio = (name, loop = false) => {
     if (!isMuted) {
       if (!audioRefs.current[name]) {
@@ -103,6 +116,7 @@ export function ConnectTheDotsGame() {
 
   const resetGame = () => {
     setCurrentShapeIndex(0)
+    setCurrentLevel(1)
     loadShape(0)
     setGameState("start")
     setShowOverlay(true)
@@ -111,12 +125,13 @@ export function ConnectTheDotsGame() {
   }
 
   const loadShape = (shapeIndex) => {
-    if (!gameConfig.shapes || !gameConfig.shapes[shapeIndex]) {
+    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig.shapes
+    if (!shapesToUse || !shapesToUse[shapeIndex]) {
       console.error("Shape not found at index:", shapeIndex)
       return
     }
 
-    const shape = gameConfig.shapes[shapeIndex]
+    const shape = shapesToUse[shapeIndex]
     setCurrentShape(shape)
     setConnectedDots([])
     setLines([])
@@ -128,11 +143,57 @@ export function ConnectTheDotsGame() {
   }
 
   const nextShape = () => {
-    if (!gameConfig.shapes || !gameConfig.shapes.length) return
+    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig.shapes
+    if (!shapesToUse || !shapesToUse.length) return
 
-    const nextIndex = (currentShapeIndex + 1) % gameConfig.shapes.length
+    const nextIndex = (currentShapeIndex + 1) % shapesToUse.length
     setCurrentShapeIndex(nextIndex)
+    setCurrentLevel(nextIndex + 1)
     loadShape(nextIndex)
+    playAudio("uiClick")
+  }
+
+  const autoAdvanceToNextLevel = () => {
+    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig.shapes
+    if (!shapesToUse || !shapesToUse.length) return
+
+    // Check if there are more levels
+    if (currentShapeIndex + 1 < shapesToUse.length) {
+      // Auto advance after 3 seconds
+      setTimeout(() => {
+        const nextIndex = currentShapeIndex + 1
+        setCurrentShapeIndex(nextIndex)
+        setCurrentLevel(nextIndex + 1)
+        loadShape(nextIndex)
+        setGameState("playing")
+        setShowOverlay(false)
+        playAudio("uiClick")
+
+        // Show level transition message
+        setFloatingText({ text: `Level ${nextIndex + 1}!`, show: true })
+        setTimeout(() => {
+          setFloatingText({ text: "", show: false })
+        }, 2000)
+      }, 3000)
+    } else {
+      // All levels completed
+      setTimeout(() => {
+        setGameState("allComplete")
+        setShowOverlay(true)
+      }, 3000)
+    }
+  }
+
+  const setDifficultyLevel = (newDifficulty) => {
+    setDifficulty(newDifficulty)
+    setCurrentShapeIndex(0)
+    setCurrentLevel(1)
+
+    // Load first shape of the new difficulty
+    setTimeout(() => {
+      loadShape(0)
+    }, 100)
+
     playAudio("uiClick")
   }
 
@@ -240,6 +301,9 @@ export function ConnectTheDotsGame() {
           setTimeout(() => {
             setFloatingText({ text: "", show: false })
           }, 2000)
+
+          // Auto advance to next level
+          autoAdvanceToNextLevel()
         } else {
           setNextDotNumber(dot.number)
         }
@@ -365,6 +429,22 @@ export function ConnectTheDotsGame() {
           <h1 className="text-2xl sm:text-3xl font-bold text-white text-center">
             {isShapeComplete ? `${currentShape.name} Complete!` : "Connect the Dots"}
           </h1>
+          <div className="flex items-center justify-center gap-4 mt-1">
+            <p className="text-sm sm:text-base text-white/80 text-center">
+              Level {currentLevel} of {filteredShapes.length} • {currentShape.difficulty?.toUpperCase() || "EASY"}
+            </p>
+            <span
+              className={`px-2 py-1 rounded text-xs font-bold ${
+                currentShape.difficulty === "easy"
+                  ? "bg-green-500 text-white"
+                  : currentShape.difficulty === "medium"
+                    ? "bg-yellow-500 text-black"
+                    : "bg-red-500 text-white"
+              }`}
+            >
+              {currentShape.difficulty?.toUpperCase() || "EASY"}
+            </span>
+          </div>
           <p className="text-sm sm:text-base text-white/80 text-center mt-1">
             {isDrawing
               ? `Drawing from dot ${startDot?.number}...`
@@ -531,7 +611,38 @@ export function ConnectTheDotsGame() {
               {gameState === "start" && (
                 <>
                   <h2 className="text-xl sm:text-2xl font-bold mb-4">{gameConfig.gameTitle}</h2>
-                  <p className="mb-6">{gameConfig.instructions}</p>
+                  <p className="mb-4">{gameConfig.instructions}</p>
+
+                  <div className="mb-6">
+                    <p className="text-sm font-semibold mb-2">Choose Difficulty:</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {["easy", "medium", "hard", "all"].map((diff) => (
+                        <button
+                          key={diff}
+                          onClick={() => setDifficultyLevel(diff)}
+                          className={`px-3 py-1 rounded text-sm font-bold transition-colors ${
+                            difficulty === diff
+                              ? diff === "easy"
+                                ? "bg-green-500 text-white"
+                                : diff === "medium"
+                                  ? "bg-yellow-500 text-black"
+                                  : diff === "hard"
+                                    ? "bg-red-500 text-white"
+                                    : "bg-blue-500 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          {diff.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2">
+                      {difficulty === "all"
+                        ? `All ${totalLevels} shapes`
+                        : `${gameConfig.shapes.filter((s) => s.difficulty === difficulty).length} ${difficulty} shapes`}
+                    </p>
+                  </div>
+
                   <button
                     onClick={startGame}
                     className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -557,6 +668,32 @@ export function ConnectTheDotsGame() {
                   >
                     Got it!
                   </button>
+                </>
+              )}
+              {gameState === "allComplete" && (
+                <>
+                  <h2 className="text-xl sm:text-2xl font-bold mb-4">🎉 All Levels Complete!</h2>
+                  <p className="mb-6">
+                    Congratulations! You've completed all {filteredShapes.length} shapes in{" "}
+                    {difficulty === "all" ? "all difficulties" : `${difficulty} difficulty`}!
+                  </p>
+                  <div className="flex gap-2 justify-center">
+                    <button
+                      onClick={resetGame}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      Play Again
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDifficultyLevel("all")
+                        setGameState("start")
+                      }}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      Try All Levels
+                    </button>
+                  </div>
                 </>
               )}
             </div>
