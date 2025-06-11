@@ -22,6 +22,8 @@ export function ConnectTheDotsGame() {
   const [isShapeComplete, setIsShapeComplete] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
   const [startDot, setStartDot] = useState(null)
+  const [currentLevel, setCurrentLevel] = useState(1)
+  const [totalLevels, setTotalLevels] = useState(gameConfig.shapes.length)
   const audioRefs = useRef({})
   const gameAreaRef = useRef(null)
   const svgRef = useRef(null)
@@ -103,6 +105,7 @@ export function ConnectTheDotsGame() {
 
   const resetGame = () => {
     setCurrentShapeIndex(0)
+    setCurrentLevel(1)
     loadShape(0)
     setGameState("start")
     setShowOverlay(true)
@@ -132,6 +135,7 @@ export function ConnectTheDotsGame() {
 
     const nextIndex = (currentShapeIndex + 1) % gameConfig.shapes.length
     setCurrentShapeIndex(nextIndex)
+    setCurrentLevel(nextIndex + 1)
     loadShape(nextIndex)
     playAudio("uiClick")
   }
@@ -372,6 +376,11 @@ export function ConnectTheDotsGame() {
                 ? "Connect back to dot 1 to finish!"
                 : `Next: Connect dot ${nextDotNumber}`}
           </p>
+          <div className="flex items-center justify-center mt-1">
+            <span className="text-white/80 text-sm">
+              Level {currentLevel} of {totalLevels}
+            </span>
+          </div>
         </div>
 
         <div
