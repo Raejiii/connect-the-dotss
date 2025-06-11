@@ -2,114 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX, SkipForward } from "lucide-react"
-
-// Dynamically import confetti to avoid SSR issues
-let confetti = null
-if (typeof window !== "undefined") {
-  import("canvas-confetti").then((module) => {
-    confetti = module.default
-  })
-}
-
-// Import game config safely
-let gameConfig = {
-  gameTitle: "Connect the Dots",
-  instructions: "Connect the numbered dots in order (1, 2, 3, 4...) to reveal hidden shapes!",
-  audio: {
-    background: "/placeholder.mp3",
-    success: "/placeholder.mp3",
-    uiClick: "/placeholder.mp3",
-    connect: "/placeholder.mp3",
-    incorrect: "/placeholder.mp3",
-    effect: "/placeholder.mp3",
-    levelWin: "/placeholder.mp3",
-    clap: "/placeholder.mp3",
-    instructions: "/placeholder.mp3",
-    start: "/placeholder.mp3",
-  },
-  splashScreen: {
-    logo: "/placeholder.svg?height=256&width=256",
-    duration: 2000,
-  },
-  shapes: [
-    {
-      id: 1,
-      name: "Triangle",
-      difficulty: "easy",
-      dots: [
-        { number: 1, x: 50, y: 20 },
-        { number: 2, x: 20, y: 70 },
-        { number: 3, x: 80, y: 70 },
-      ],
-    },
-    {
-      id: 2,
-      name: "Square",
-      difficulty: "easy",
-      dots: [
-        { number: 1, x: 30, y: 30 },
-        { number: 2, x: 70, y: 30 },
-        { number: 3, x: 70, y: 70 },
-        { number: 4, x: 30, y: 70 },
-      ],
-    },
-    {
-      id: 3,
-      name: "Diamond",
-      difficulty: "easy",
-      dots: [
-        { number: 1, x: 50, y: 20 },
-        { number: 2, x: 75, y: 50 },
-        { number: 3, x: 50, y: 80 },
-        { number: 4, x: 25, y: 50 },
-      ],
-    },
-    {
-      id: 4,
-      name: "Pentagon",
-      difficulty: "medium",
-      dots: [
-        { number: 1, x: 50, y: 15 },
-        { number: 2, x: 80, y: 35 },
-        { number: 3, x: 70, y: 75 },
-        { number: 4, x: 30, y: 75 },
-        { number: 5, x: 20, y: 35 },
-      ],
-    },
-    {
-      id: 5,
-      name: "Star",
-      difficulty: "hard",
-      dots: [
-        { number: 1, x: 50, y: 15 },
-        { number: 2, x: 60, y: 40 },
-        { number: 3, x: 85, y: 40 },
-        { number: 4, x: 65, y: 60 },
-        { number: 5, x: 75, y: 85 },
-        { number: 6, x: 50, y: 70 },
-        { number: 7, x: 25, y: 85 },
-        { number: 8, x: 35, y: 60 },
-        { number: 9, x: 15, y: 40 },
-        { number: 10, x: 40, y: 40 },
-      ],
-    },
-  ],
-}
-
-// Try to load the actual config
-if (typeof window !== "undefined") {
-  try {
-    import("../config/game-config.json")
-      .then((module) => {
-        gameConfig = module.default || module
-      })
-      .catch(() => {
-        console.log("Using fallback game config")
-      })
-  } catch (error) {
-    console.log("Using fallback game config")
-  }
-}
+import confetti from "canvas-confetti"
+import gameConfig from "../config/game-config.json"
 
 export function ConnectTheDotsGame() {
   const [showSplash, setShowSplash] = useState(true)
@@ -120,7 +14,7 @@ export function ConnectTheDotsGame() {
   const [floatingText, setFloatingText] = useState({ text: "", show: false })
   const [isSplashFading, setIsSplashFading] = useState(false)
   const [currentShapeIndex, setCurrentShapeIndex] = useState(0)
-  const [currentShape, setCurrentShape] = useState(null)
+  const [currentShape, setCurrentShape] = useState(gameConfig.shapes[0]) // Initialize with first shape
   const [connectedDots, setConnectedDots] = useState([])
   const [lines, setLines] = useState([])
   const [currentLine, setCurrentLine] = useState(null)
@@ -129,33 +23,21 @@ export function ConnectTheDotsGame() {
   const [isDrawing, setIsDrawing] = useState(false)
   const [startDot, setStartDot] = useState(null)
   const [currentLevel, setCurrentLevel] = useState(1)
-  const [totalLevels, setTotalLevels] = useState(5)
-  const [difficulty, setDifficulty] = useState("all")
-  const [filteredShapes, setFilteredShapes] = useState([])
+  const [totalLevels] = useState(gameConfig.shapes.length)
+  const [difficulty, setDifficulty] = useState("all") // "easy", "medium", "hard", "all"
+  const [filteredShapes, setFilteredShapes] = useState(gameConfig.shapes)
   const audioRefs = useRef({})
   const gameAreaRef = useRef(null)
   const svgRef = useRef(null)
 
-  // Initialize shapes and current shape
   useEffect(() => {
-    if (gameConfig && gameConfig.shapes && gameConfig.shapes.length > 0) {
-      setFilteredShapes(gameConfig.shapes)
-      setCurrentShape(gameConfig.shapes[0])
-      setTotalLevels(gameConfig.shapes.length)
-    }
-  }, [])
-
-  useEffect(() => {
-    const fadeTimer = setTimeout(
-      () => {
-        setIsSplashFading(true)
-      },
-      (gameConfig?.splashScreen?.duration || 2000) - 500,
-    )
+    const fadeTimer = setTimeout(() => {
+      setIsSplashFading(true)
+    }, gameConfig.splashScreen.duration - 500)
 
     const removeTimer = setTimeout(() => {
       setShowSplash(false)
-    }, gameConfig?.splashScreen?.duration || 2000)
+    }, gameConfig.splashScreen.duration)
 
     return () => {
       clearTimeout(fadeTimer)
@@ -187,8 +69,6 @@ export function ConnectTheDotsGame() {
 
   // Update filtered shapes when difficulty changes
   useEffect(() => {
-    if (!gameConfig?.shapes) return
-
     if (difficulty === "all") {
       setFilteredShapes(gameConfig.shapes)
     } else {
@@ -197,18 +77,14 @@ export function ConnectTheDotsGame() {
   }, [difficulty])
 
   const playAudio = (name, loop = false) => {
-    if (!isMuted && gameConfig?.audio?.[name]) {
-      try {
-        if (!audioRefs.current[name]) {
-          audioRefs.current[name] = new Audio(gameConfig.audio[name])
-          audioRefs.current[name].loop = loop
-        }
-        audioRefs.current[name].play().catch((error) => {
-          console.error(`Error playing audio ${name}:`, error)
-        })
-      } catch (error) {
-        console.error(`Error creating audio ${name}:`, error)
+    if (!isMuted) {
+      if (!audioRefs.current[name]) {
+        audioRefs.current[name] = new Audio(gameConfig.audio[name])
+        audioRefs.current[name].loop = loop
       }
+      audioRefs.current[name].play().catch((error) => {
+        console.error(`Error playing audio ${name}:`, error)
+      })
     }
   }
 
@@ -249,7 +125,7 @@ export function ConnectTheDotsGame() {
   }
 
   const loadShape = (shapeIndex) => {
-    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig?.shapes || []
+    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig.shapes
     if (!shapesToUse || !shapesToUse[shapeIndex]) {
       console.error("Shape not found at index:", shapeIndex)
       return
@@ -267,7 +143,7 @@ export function ConnectTheDotsGame() {
   }
 
   const nextShape = () => {
-    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig?.shapes || []
+    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig.shapes
     if (!shapesToUse || !shapesToUse.length) return
 
     const nextIndex = (currentShapeIndex + 1) % shapesToUse.length
@@ -278,7 +154,7 @@ export function ConnectTheDotsGame() {
   }
 
   const autoAdvanceToNextLevel = () => {
-    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig?.shapes || []
+    const shapesToUse = filteredShapes.length > 0 ? filteredShapes : gameConfig.shapes
     if (!shapesToUse || !shapesToUse.length) return
 
     // Check if there are more levels
@@ -330,36 +206,30 @@ export function ConnectTheDotsGame() {
   }
 
   const playConfetti = () => {
-    if (!confetti) return
+    const duration = 3 * 1000
+    const animationEnd = Date.now() + duration
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 }
 
-    try {
-      const duration = 3 * 1000
-      const animationEnd = Date.now() + duration
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 }
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min
+    }
 
-      function randomInRange(min, max) {
-        return Math.random() * (max - min) + min
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now()
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval)
       }
 
-      const interval = setInterval(() => {
-        const timeLeft = animationEnd - Date.now()
+      const particleCount = 50 * (timeLeft / duration)
 
-        if (timeLeft <= 0) {
-          return clearInterval(interval)
-        }
-
-        const particleCount = 50 * (timeLeft / duration)
-
-        confetti(
-          Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
-          }),
-        )
-      }, 250)
-    } catch (error) {
-      console.error("Error playing confetti:", error)
-    }
+      confetti(
+        Object.assign({}, defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
+        }),
+      )
+    }, 250)
   }
 
   const getDotPosition = (dot) => {
@@ -517,7 +387,7 @@ export function ConnectTheDotsGame() {
       >
         <div className="w-64 h-64 relative flex items-center justify-center">
           <img
-            src={gameConfig?.splashScreen?.logo || "/placeholder.svg?height=256&width=256"}
+            src={gameConfig.splashScreen.logo || "/placeholder.svg?height=256&width=256"}
             alt="eklavya - making learning accessible"
             className="w-full h-full object-contain animate-fade-in"
           />
@@ -528,6 +398,7 @@ export function ConnectTheDotsGame() {
 
   // Safety check for currentShape
   if (!currentShape) {
+    console.error("Current shape is null")
     return (
       <div className="fixed inset-0 bg-[#000B18] flex items-center justify-center">
         <div className="text-white text-xl">Loading game...</div>
@@ -597,7 +468,7 @@ export function ConnectTheDotsGame() {
         >
           {/* Dots */}
           {currentShape.dots
-            ?.filter((dot, index, array) => {
+            .filter((dot, index, array) => {
               // Remove duplicate dots (like the closing dot that returns to start)
               return index === array.findIndex((d) => d.x === dot.x && d.y === dot.y)
             })
@@ -739,8 +610,8 @@ export function ConnectTheDotsGame() {
             <div className="bg-white p-6 sm:p-8 rounded-xl max-w-sm w-11/12 text-center">
               {gameState === "start" && (
                 <>
-                  <h2 className="text-xl sm:text-2xl font-bold mb-4">{gameConfig?.gameTitle || "Connect the Dots"}</h2>
-                  <p className="mb-4">{gameConfig?.instructions || "Connect numbered dots to reveal shapes!"}</p>
+                  <h2 className="text-xl sm:text-2xl font-bold mb-4">{gameConfig.gameTitle}</h2>
+                  <p className="mb-4">{gameConfig.instructions}</p>
 
                   <div className="mb-6">
                     <p className="text-sm font-semibold mb-2">Choose Difficulty:</p>
@@ -768,7 +639,7 @@ export function ConnectTheDotsGame() {
                     <p className="text-xs text-gray-600 mt-2">
                       {difficulty === "all"
                         ? `All ${totalLevels} shapes`
-                        : `${(gameConfig?.shapes || []).filter((s) => s.difficulty === difficulty).length} ${difficulty} shapes`}
+                        : `${gameConfig.shapes.filter((s) => s.difficulty === difficulty).length} ${difficulty} shapes`}
                     </p>
                   </div>
 
@@ -783,7 +654,7 @@ export function ConnectTheDotsGame() {
               {gameState === "help" && (
                 <>
                   <h2 className="text-xl sm:text-2xl font-bold mb-4">How to Play</h2>
-                  <p className="mb-6">{gameConfig?.instructions || "Connect numbered dots to reveal shapes!"}</p>
+                  <p className="mb-6">{gameConfig.instructions}</p>
                   <p className="mb-6 text-sm text-gray-600">
                     Click and drag from one numbered dot to the next to draw lines and reveal the hidden shape!
                   </p>
