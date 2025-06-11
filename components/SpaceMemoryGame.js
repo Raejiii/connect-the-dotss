@@ -1,9 +1,21 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX } from "lucide-react"
 import confetti from "canvas-confetti"
 import gameConfig from "../config/game-config.json"
+
+// Ensure gameConfig has the required structure
+if (!gameConfig || !gameConfig.shapes) {
+  console.error("Game config is missing or invalid")
+  gameConfig = {
+    gameTitle: "Connect the Dots",
+    instructions: "Connect identical pictures with a line!",
+    shapes: [],
+    splashScreen: { duration: 2000, logo: "/placeholder.svg" },
+    audio: {},
+  }
+}
 
 export function SpaceMemoryGame() {
   const [showSplash, setShowSplash] = useState(true)
@@ -97,7 +109,7 @@ export function SpaceMemoryGame() {
   }
 
   const resetGame = () => {
-    const shuffled = [...gameConfig.gameItems, ...gameConfig.gameItems]
+    const shuffled = [...gameConfig.shapes, ...gameConfig.shapes]
       .sort(() => Math.random() - 0.5)
       .map((item, index) => ({ ...item, position: index }))
     setShuffledItems(shuffled)
@@ -208,7 +220,7 @@ export function SpaceMemoryGame() {
         setFloatingText({ text: "", show: false })
       }, 1000)
 
-      if (matchedPairs.length + 1 === gameConfig.gameItems.length) {
+      if (matchedPairs.length + 1 === gameConfig.shapes.length) {
         // Game won
         setGameState("won")
         playAudio("levelWin")
@@ -303,7 +315,7 @@ export function SpaceMemoryGame() {
         setFloatingText({ text: "", show: false })
       }, 1000)
 
-      if (matchedPairs.length + 1 === gameConfig.gameItems.length) {
+      if (matchedPairs.length + 1 === gameConfig.shapes.length) {
         // Game won
         setGameState("won")
         playAudio("levelWin")
@@ -324,6 +336,18 @@ export function SpaceMemoryGame() {
     }
 
     setCurrentLine(null)
+  }
+
+  // Early return if no shapes available
+  if (!gameConfig.shapes || gameConfig.shapes.length === 0) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="text-white text-center">
+          <h2 className="text-2xl font-bold mb-4">Game Loading...</h2>
+          <p>Please check the game configuration.</p>
+        </div>
+      </div>
+    )
   }
 
   if (showSplash) {

@@ -3,6 +3,7 @@ import "./globals.css"
 export const metadata = {
   title: "Connect the Dots Game",
   description: "Connect numbered dots to reveal shapes",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({ children }) {
