@@ -20,6 +20,7 @@ export function ConnectTheDotsGame() {
   const [currentLine, setCurrentLine] = useState(null)
   const [nextDotNumber, setNextDotNumber] = useState(1)
   const [isShapeComplete, setIsShapeComplete] = useState(false)
+  const [showShapeImage, setShowShapeImage] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
   const [startDot, setStartDot] = useState(null)
   const [currentLevel, setCurrentLevel] = useState(1)
@@ -138,6 +139,7 @@ export function ConnectTheDotsGame() {
     setCurrentLine(null)
     setNextDotNumber(1)
     setIsShapeComplete(false)
+    setShowShapeImage(false)
     setIsDrawing(false)
     setStartDot(null)
   }
@@ -292,8 +294,14 @@ export function ConnectTheDotsGame() {
 
         if (dot.number === 1 && nextDotNumber === currentShape.dots.length) {
           // Shape completed (connected back to start)
-          setConnectedDots((prev) => [...prev, startDot.number])
+          setConnectedDots((prev) => [...prev, dot.number])
           setIsShapeComplete(true)
+
+          // Show the shape image with a delay
+          setTimeout(() => {
+            setShowShapeImage(true)
+          }, 500)
+
           playAudio("success")
           playAudio("levelWin")
           playConfetti()
@@ -466,6 +474,17 @@ export function ConnectTheDotsGame() {
           onTouchMove={handleInteractionMove}
           onTouchEnd={handleInteractionEnd}
         >
+          {/* Shape Image (shown when completed) */}
+          {showShapeImage && currentShape.image && (
+            <div className="absolute inset-0 w-full h-full z-20 pointer-events-none animate-reveal-shape">
+              <img
+                src={currentShape.image || "/placeholder.svg"}
+                alt={currentShape.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+
           {/* Dots */}
           {currentShape.dots
             .filter((dot, index, array) => {
@@ -484,7 +503,7 @@ export function ConnectTheDotsGame() {
                       : isDrawing && startDot?.number === dot.number
                         ? "bg-blue-500 text-white shadow-lg scale-110"
                         : "bg-white text-black shadow-md hover:bg-gray-100"
-                }`}
+                } ${showShapeImage ? "z-30" : "z-20"}`}
                 style={{
                   left: `${dot.x}%`,
                   top: `${dot.y}%`,
@@ -501,7 +520,7 @@ export function ConnectTheDotsGame() {
           {/* SVG for lines */}
           <svg
             ref={svgRef}
-            className="absolute inset-0 w-full h-full pointer-events-none z-10"
+            className={`absolute inset-0 w-full h-full pointer-events-none ${showShapeImage ? "z-10" : "z-10"}`}
             style={{ touchAction: "none" }}
           >
             {lines.map((line, index) => (

@@ -26,6 +26,8 @@ export const gameConfig = {
       id: 1,
       name: "Triangle",
       difficulty: "easy",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,20 20,70 80,70' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 20 },
         { number: 2, x: 20, y: 70 },
@@ -36,6 +38,8 @@ export const gameConfig = {
       id: 2,
       name: "Square",
       difficulty: "easy",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='30' y='30' width='40' height='40' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 30, y: 30 },
         { number: 2, x: 70, y: 30 },
@@ -47,6 +51,8 @@ export const gameConfig = {
       id: 3,
       name: "Diamond",
       difficulty: "easy",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,20 75,50 50,80 25,50' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 20 },
         { number: 2, x: 75, y: 50 },
@@ -58,6 +64,8 @@ export const gameConfig = {
       id: 4,
       name: "Pentagon",
       difficulty: "medium",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,15 80,35 70,75 30,75 20,35' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 15 },
         { number: 2, x: 80, y: 35 },
@@ -70,6 +78,8 @@ export const gameConfig = {
       id: 5,
       name: "Hexagon",
       difficulty: "medium",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,15 75,30 75,60 50,75 25,60 25,30' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 15 },
         { number: 2, x: 75, y: 30 },
@@ -83,6 +93,8 @@ export const gameConfig = {
       id: 6,
       name: "Star",
       difficulty: "hard",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 L60,40 L85,40 L65,60 L75,85 L50,70 L25,85 L35,60 L15,40 L40,40 Z' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 15 },
         { number: 2, x: 60, y: 40 },
@@ -100,6 +112,8 @@ export const gameConfig = {
       id: 7,
       name: "House",
       difficulty: "medium",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M25,70 L25,50 L50,25 L75,50 L75,70 L60,70 L60,55 L40,55 L40,70 Z' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 25, y: 70 },
         { number: 2, x: 25, y: 50 },
@@ -116,6 +130,8 @@ export const gameConfig = {
       id: 8,
       name: "Arrow",
       difficulty: "medium",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 L70,35 L60,35 L60,75 L40,75 L40,35 L30,35 Z' fill='%2322c55e' fill-opacity='0.7' stroke='%2322c55e' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 15 },
         { number: 2, x: 70, y: 35 },
@@ -130,6 +146,8 @@ export const gameConfig = {
       id: 9,
       name: "Heart",
       difficulty: "hard",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,80 C35,65 25,50 25,35 C25,25 35,25 50,35 C65,25 75,25 75,35 C75,50 65,65 50,80 Z' fill='%23ff6b6b' fill-opacity='0.7' stroke='%23ff6b6b' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 80 },
         { number: 2, x: 35, y: 65 },
@@ -147,6 +165,8 @@ export const gameConfig = {
       id: 10,
       name: "Lightning",
       difficulty: "hard",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M40,15 L60,15 L45,35 L55,35 L35,55 L50,55 L30,75 L45,75 L40,45 L50,25 Z' fill='%23ffd700' fill-opacity='0.7' stroke='%23ffd700' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 40, y: 15 },
         { number: 2, x: 60, y: 15 },
@@ -164,6 +184,8 @@ export const gameConfig = {
       id: 11,
       name: "Butterfly",
       difficulty: "hard",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,20 C35,30 25,45 35,50 C50,45 65,50 75,45 C65,30 50,35 35,60 C25,75 50,65 75,75 C65,60 50,20 50,20 Z' fill='%239c59b6' fill-opacity='0.7' stroke='%239c59b6' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 20 },
         { number: 2, x: 35, y: 30 },
@@ -185,6 +207,8 @@ export const gameConfig = {
       id: 12,
       name: "Rocket",
       difficulty: "medium",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,15 C60,30 55,40 55,65 C65,75 50,70 35,75 C45,65 45,40 40,30 C40,30 50,15 50,15 Z' fill='%234299e1' fill-opacity='0.7' stroke='%234299e1' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 15 },
         { number: 2, x: 60, y: 30 },
@@ -202,6 +226,8 @@ export const gameConfig = {
       id: 13,
       name: "Fish",
       difficulty: "medium",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20,50 C35,35 55,30 75,40 C85,50 75,60 55,70 C35,65 45,50 35,50 C35,50 20,50 20,50 Z' fill='%234299e1' fill-opacity='0.7' stroke='%234299e1' stroke-width='2'/%3E%3Ccircle cx='45' cy='45' r='3' fill='%23000'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 20, y: 50 },
         { number: 2, x: 35, y: 35 },
@@ -219,6 +245,8 @@ export const gameConfig = {
       id: 14,
       name: "Crown",
       difficulty: "hard",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20,70 C25,50 35,40 45,50 C50,30 55,50 65,40 C75,50 80,70 65,70 C50,65 35,70 20,70 Z' fill='%23ffd700' fill-opacity='0.7' stroke='%23ffd700' stroke-width='2'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 20, y: 70 },
         { number: 2, x: 25, y: 50 },
@@ -238,6 +266,8 @@ export const gameConfig = {
       id: 15,
       name: "Flower",
       difficulty: "hard",
+      image:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,20 C65,30 70,45 65,60 C50,65 35,60 30,45 C35,30 50,35 50,50 C50,70 45,80 55,80 Z' fill='%23ed64a6' fill-opacity='0.7' stroke='%23ed64a6' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%23ffd700'/%3E%3C/svg%3E",
       dots: [
         { number: 1, x: 50, y: 20 },
         { number: 2, x: 65, y: 30 },

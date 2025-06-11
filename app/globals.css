@@ -77,6 +77,19 @@ h1 {
   }
 }
 
+@keyframes revealShape {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
 .animate-float-fade {
   animation: floatFade 2s ease-out forwards;
 }
@@ -87,6 +100,10 @@ h1 {
 
 .animate-fade-out {
   animation: fadeOut 0.5s ease-in-out;
+}
+
+.animate-reveal-shape {
+  animation: revealShape 1s ease-out forwards;
 }
 
 /* Responsive styles */
