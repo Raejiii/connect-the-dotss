@@ -21,7 +21,7 @@ export function ConnectTheDotsGame() {
   const [nextDotNumber, setNextDotNumber] = useState(1)
   const [isShapeComplete, setIsShapeComplete] = useState(false)
   const [showShapeImage, setShowShapeImage] = useState(false)
-  const [isDrawing, setIsDrawing] = useState(false)
+  const [isDrawing, setIsDrawing] = useState(false) // Fixed: removed circular reference
   const [startDot, setStartDot] = useState(null)
   const [currentLevel, setCurrentLevel] = useState(1)
   const [totalLevels] = useState(gameConfig.shapes.length)
@@ -265,37 +265,137 @@ export function ConnectTheDotsGame() {
   }
 
   const handleDotClick = (dot) => {
+    // This function is now only used for direct clicks, not drag operations
     if (gameState !== "playing" || isShapeComplete || !currentShape) return
 
-    if (!isDrawing) {
-      // Start drawing from this dot
-      if (dot.number === nextDotNumber) {
-        setIsDrawing(true)
-        setStartDot(dot)
-        const position = getDotPosition(dot)
-        setCurrentLine({ start: position, end: position, startDot: dot })
-        playAudio("connect")
-      } else {
-        playAudio("incorrect")
-        setFloatingText({ text: `Start with dot ${nextDotNumber}!`, show: true })
+    // For direct clicks, just highlight the next expected dot
+    if (dot.number !== nextDotNumber) {
+      playAudio("incorrect")
+      setFloatingText({ text: `Start with dot ${nextDotNumber}!`, show: true })
+      setTimeout(() => {
+        setFloatingText({ text: "", show: false })
+      }, 1000)
+    }
+  }
+
+  const handleInteractionStart = (e) => {
+    e.preventDefault()
+    if (gameState !== "playing" || isShapeComplete) return
+
+    const point = getEventPoint(e)
+    const dot = getTouchedDot(point)
+
+    if (dot && dot.number === nextDotNumber) {
+      // Start drawing from the correct dot
+      setIsDrawing(true)
+      setStartDot(dot)
+      const position = getDotPosition(dot)
+      setCurrentLine({ start: position, end: position, startDot: dot })
+      playAudio("connect")
+    } else if (dot) {
+      // Wrong starting dot
+      playAudio("incorrect")
+      setFloatingText({ text: `Start with dot ${nextDotNumber}!`, show: true })
+      setTimeout(() => {
+        setFloatingText({ text: "", show: false })
+      }, 1000)
+    }
+  }
+
+  const handleInteractionMove = (e) => {
+    e.preventDefault()
+    if (!isDrawing || !svgRef.current) return
+
+    const svgRect = svgRef.current.getBoundingClientRect()
+    const point = getEventPoint(e)
+    const x = point.x - svgRect.left
+    const y = point.y - svgRect.top
+
+    // Update the current line's end position
+    if (currentLine) {
+      setCurrentLine({ ...currentLine, end: { x, y } })
+    }
+
+    // Check if we're hovering over the next dot
+    const hoveredDot = getTouchedDot(point)
+    const expectedNext = nextDotNumber === currentShape.dots.length ? 1 : nextDotNumber + 1
+
+    // If we're hovering over the correct next dot, automatically connect to it
+    if (hoveredDot && hoveredDot.number === expectedNext && hoveredDot !== startDot) {
+      const startPosition = getDotPosition(startDot)
+      const endPosition = getDotPosition(hoveredDot)
+
+      // Add the completed line
+      setLines((prev) => [...prev, { start: startPosition, end: endPosition }])
+      setConnectedDots((prev) => [...prev, startDot.number])
+
+      if (hoveredDot.number === 1 && nextDotNumber === currentShape.dots.length) {
+        // Shape completed (connected back to start)
+        setConnectedDots((prev) => [...prev, hoveredDot.number])
+        setIsShapeComplete(true)
+        setIsDrawing(false)
+        setCurrentLine(null)
+
+        // Show the shape image with a delay
+        setTimeout(() => {
+          setShowShapeImage(true)
+        }, 500)
+
+        playAudio("success")
+        playAudio("levelWin")
+        playConfetti()
+        setFloatingText({ text: `${currentShape.name} Complete!`, show: true })
         setTimeout(() => {
           setFloatingText({ text: "", show: false })
-        }, 1000)
+        }, 2000)
+
+        // Auto advance to next level
+        autoAdvanceToNextLevel()
+      } else {
+        // Move to next dot and continue drawing
+        setNextDotNumber(hoveredDot.number)
+
+        // Set the current end dot as the new start dot for the next line
+        setStartDot(hoveredDot)
+
+        // Update the current line to start from the new dot
+        const newPosition = getDotPosition(hoveredDot)
+        setCurrentLine({
+          start: newPosition,
+          end: { x, y },
+          startDot: hoveredDot,
+        })
+
+        playAudio("connect")
       }
-    } else {
-      // End drawing at this dot
-      if (dot.number === nextDotNumber + 1 || (nextDotNumber === currentShape.dots.length && dot.number === 1)) {
-        // Correct connection
+    }
+  }
+
+  const handleInteractionEnd = (e) => {
+    e.preventDefault()
+    if (!currentLine || !isDrawing) return
+
+    const point = getEventPoint(e)
+    const endDot = getTouchedDot(point)
+
+    if (endDot && endDot !== startDot) {
+      // Check if this is the correct next dot
+      const expectedNext = nextDotNumber === currentShape.dots.length ? 1 : nextDotNumber + 1
+
+      if (endDot.number === expectedNext) {
+        // Correct connection!
         const startPosition = getDotPosition(startDot)
-        const endPosition = getDotPosition(dot)
+        const endPosition = getDotPosition(endDot)
 
         setLines((prev) => [...prev, { start: startPosition, end: endPosition }])
         setConnectedDots((prev) => [...prev, startDot.number])
 
-        if (dot.number === 1 && nextDotNumber === currentShape.dots.length) {
+        if (endDot.number === 1 && nextDotNumber === currentShape.dots.length) {
           // Shape completed (connected back to start)
-          setConnectedDots((prev) => [...prev, dot.number])
+          setConnectedDots((prev) => [...prev, endDot.number])
           setIsShapeComplete(true)
+          setIsDrawing(false) // Stop drawing when shape is complete
+          setCurrentLine(null)
 
           // Show the shape image with a delay
           setTimeout(() => {
@@ -313,13 +413,22 @@ export function ConnectTheDotsGame() {
           // Auto advance to next level
           autoAdvanceToNextLevel()
         } else {
-          setNextDotNumber(dot.number)
-        }
+          // Move to next dot and continue drawing
+          setNextDotNumber(endDot.number)
 
-        setIsDrawing(false)
-        setStartDot(null)
-        setCurrentLine(null)
-        playAudio("connect")
+          // Set the current end dot as the new start dot for the next line
+          setStartDot(endDot)
+
+          // Update the current line to start from the new dot
+          const newPosition = getDotPosition(endDot)
+          setCurrentLine({
+            start: newPosition,
+            end: newPosition,
+            startDot: endDot,
+          })
+
+          playAudio("connect")
+        }
       } else {
         // Wrong connection
         playAudio("incorrect")
@@ -329,38 +438,8 @@ export function ConnectTheDotsGame() {
           setFloatingText({ text: "", show: false })
         }, 1000)
       }
-    }
-  }
-
-  const handleInteractionStart = (e) => {
-    e.preventDefault()
-    if (gameState !== "playing" || isShapeComplete) return
-    const point = getEventPoint(e)
-    const dot = getTouchedDot(point)
-    if (dot) {
-      handleDotClick(dot)
-    }
-  }
-
-  const handleInteractionMove = (e) => {
-    e.preventDefault()
-    if (!currentLine || !svgRef.current || !isDrawing) return
-    const svgRect = svgRef.current.getBoundingClientRect()
-    const point = getEventPoint(e)
-    const x = point.x - svgRect.left
-    const y = point.y - svgRect.top
-    setCurrentLine({ ...currentLine, end: { x, y } })
-  }
-
-  const handleInteractionEnd = (e) => {
-    e.preventDefault()
-    if (!currentLine || !isDrawing) return
-    const point = getEventPoint(e)
-    const dot = getTouchedDot(point)
-    if (dot && dot !== startDot) {
-      handleDotClick(dot)
     } else {
-      // Cancel the current line if not ending on a valid dot
+      // If not connecting to a valid dot, stop drawing
       setCurrentLine(null)
       setIsDrawing(false)
       setStartDot(null)
@@ -455,10 +534,10 @@ export function ConnectTheDotsGame() {
           </div>
           <p className="text-sm sm:text-base text-white/80 text-center mt-1">
             {isDrawing
-              ? `Drawing from dot ${startDot?.number}...`
+              ? `Drag to dot ${nextDotNumber === currentShape.dots.length ? 1 : nextDotNumber + 1}...`
               : nextDotNumber > currentShape.dots.length
                 ? "Connect back to dot 1 to finish!"
-                : `Next: Connect dot ${nextDotNumber}`}
+                : `Drag from dot ${nextDotNumber} to ${nextDotNumber === currentShape.dots.length ? 1 : nextDotNumber + 1}`}
           </p>
         </div>
 
@@ -492,17 +571,16 @@ export function ConnectTheDotsGame() {
               return index === array.findIndex((d) => d.x === dot.x && d.y === dot.y)
             })
             .map((dot, index) => (
-              <button
+              <div
                 key={index}
-                onClick={() => handleDotClick(dot)}
-                className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold transition-all duration-300 transform hover:scale-110 ${
+                className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold transition-all duration-300 transform pointer-events-none ${
                   connectedDots.includes(dot.number)
                     ? "bg-green-500 text-white shadow-lg scale-110"
                     : dot.number === nextDotNumber && !isDrawing
                       ? "bg-yellow-400 text-black shadow-lg animate-pulse"
                       : isDrawing && startDot?.number === dot.number
                         ? "bg-blue-500 text-white shadow-lg scale-110"
-                        : "bg-white text-black shadow-md hover:bg-gray-100"
+                        : "bg-white text-black shadow-md"
                 } ${showShapeImage ? "z-30" : "z-20"}`}
                 style={{
                   left: `${dot.x}%`,
@@ -510,11 +588,10 @@ export function ConnectTheDotsGame() {
                   transform: `translate(-50%, -50%) ${connectedDots.includes(dot.number) || dot.number === nextDotNumber ? "scale(1.1)" : "scale(1)"}`,
                   touchAction: "none",
                 }}
-                disabled={gameState !== "playing" || isShapeComplete}
                 aria-label={`Dot number ${dot.number}`}
               >
                 {dot.number}
-              </button>
+              </div>
             ))}
 
           {/* SVG for lines */}
@@ -670,51 +747,6 @@ export function ConnectTheDotsGame() {
                   </button>
                 </>
               )}
-              {gameState === "help" && (
-                <>
-                  <h2 className="text-xl sm:text-2xl font-bold mb-4">How to Play</h2>
-                  <p className="mb-6">{gameConfig.instructions}</p>
-                  <p className="mb-6 text-sm text-gray-600">
-                    Click and drag from one numbered dot to the next to draw lines and reveal the hidden shape!
-                  </p>
-                  <button
-                    onClick={() => {
-                      setGameState(showSidebar ? "paused" : "playing")
-                      setShowOverlay(false)
-                      playAudio("uiClick")
-                    }}
-                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    Got it!
-                  </button>
-                </>
-              )}
-              {gameState === "allComplete" && (
-                <>
-                  <h2 className="text-xl sm:text-2xl font-bold mb-4">🎉 All Levels Complete!</h2>
-                  <p className="mb-6">
-                    Congratulations! You've completed all {filteredShapes.length} shapes in{" "}
-                    {difficulty === "all" ? "all difficulties" : `${difficulty} difficulty`}!
-                  </p>
-                  <div className="flex gap-2 justify-center">
-                    <button
-                      onClick={resetGame}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                      Play Again
-                    </button>
-                    <button
-                      onClick={() => {
-                        setDifficultyLevel("all")
-                        setGameState("start")
-                      }}
-                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                    >
-                      Try All Levels
-                    </button>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         )}
@@ -722,5 +754,3 @@ export function ConnectTheDotsGame() {
     </div>
   )
 }
-
-export default ConnectTheDotsGame

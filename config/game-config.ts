@@ -1,6 +1,6 @@
 export const gameConfig = {
   gameTitle: "Connect the Dots",
-  instructions: "Connect the numbered dots in order (1, 2, 3, 4...) to reveal hidden shapes!",
+  instructions: "Drag from one numbered dot to the next in order (1→2→3→4...) to reveal hidden shapes!",
   audio: {
     background:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2-cherry-cute-bgm-271158-zIouDJ4FGUOTEpIXP10RZWnp9zff4A.mp3",

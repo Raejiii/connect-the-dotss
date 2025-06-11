@@ -2,14 +2,17 @@
 
 import dynamic from "next/dynamic"
 
-const DynamicConnectTheDotsGame = dynamic(() => import("./ConnectTheDotsGame"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-screen w-screen flex items-center justify-center bg-[#000B18]">
-      <div className="text-xl text-white">Loading game...</div>
-    </div>
-  ),
-})
+const DynamicConnectTheDotsGame = dynamic(
+  () => import("./ConnectTheDotsGame").then((mod) => ({ default: mod.ConnectTheDotsGame })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-screen w-screen flex items-center justify-center bg-[#000B18]">
+        <div className="text-xl text-white">Loading game...</div>
+      </div>
+    ),
+  },
+)
 
 export default function GameWrapper() {
   return (
