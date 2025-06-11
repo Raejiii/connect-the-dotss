@@ -21,11 +21,13 @@
     {
       "id": 1,
       "name": "Triangle",
+      "difficulty": "easy",
       "dots": [{ "number": 1, "x": 50, "y": 20 }, { "number": 2, "x": 20, "y": 70 }, { "number": 3, "x": 80, "y": 70 }]
     },
     {
       "id": 2,
       "name": "Square",
+      "difficulty": "easy",
       "dots": [
         { "number": 1, "x": 30, "y": 30 },
         { "number": 2, "x": 70, "y": 30 },
@@ -36,6 +38,7 @@
     {
       "id": 3,
       "name": "Diamond",
+      "difficulty": "easy",
       "dots": [
         { "number": 1, "x": 50, "y": 20 },
         { "number": 2, "x": 75, "y": 50 },
@@ -45,7 +48,33 @@
     },
     {
       "id": 4,
+      "name": "Pentagon",
+      "difficulty": "medium",
+      "dots": [
+        { "number": 1, "x": 50, "y": 15 },
+        { "number": 2, "x": 80, "y": 35 },
+        { "number": 3, "x": 70, "y": 75 },
+        { "number": 4, "x": 30, "y": 75 },
+        { "number": 5, "x": 20, "y": 35 }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Hexagon",
+      "difficulty": "medium",
+      "dots": [
+        { "number": 1, "x": 50, "y": 15 },
+        { "number": 2, "x": 75, "y": 30 },
+        { "number": 3, "x": 75, "y": 60 },
+        { "number": 4, "x": 50, "y": 75 },
+        { "number": 5, "x": 25, "y": 60 },
+        { "number": 6, "x": 25, "y": 30 }
+      ]
+    },
+    {
+      "id": 6,
       "name": "Star",
+      "difficulty": "hard",
       "dots": [
         { "number": 1, "x": 50, "y": 15 },
         { "number": 2, "x": 60, "y": 40 },
@@ -60,8 +89,9 @@
       ]
     },
     {
-      "id": 5,
+      "id": 7,
       "name": "House",
+      "difficulty": "medium",
       "dots": [
         { "number": 1, "x": 25, "y": 70 },
         { "number": 2, "x": 25, "y": 50 },
@@ -72,6 +102,148 @@
         { "number": 7, "x": 60, "y": 55 },
         { "number": 8, "x": 40, "y": 55 },
         { "number": 9, "x": 40, "y": 70 }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Arrow",
+      "difficulty": "medium",
+      "dots": [
+        { "number": 1, "x": 50, "y": 15 },
+        { "number": 2, "x": 70, "y": 35 },
+        { "number": 3, "x": 60, "y": 35 },
+        { "number": 4, "x": 60, "y": 75 },
+        { "number": 5, "x": 40, "y": 75 },
+        { "number": 6, "x": 40, "y": 35 },
+        { "number": 7, "x": 30, "y": 35 }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Heart",
+      "difficulty": "hard",
+      "dots": [
+        { "number": 1, "x": 50, "y": 80 },
+        { "number": 2, "x": 35, "y": 65 },
+        { "number": 3, "x": 25, "y": 50 },
+        { "number": 4, "x": 25, "y": 35 },
+        { "number": 5, "x": 35, "y": 25 },
+        { "number": 6, "x": 50, "y": 35 },
+        { "number": 7, "x": 65, "y": 25 },
+        { "number": 8, "x": 75, "y": 35 },
+        { "number": 9, "x": 75, "y": 50 },
+        { "number": 10, "x": 65, "y": 65 }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Lightning",
+      "difficulty": "hard",
+      "dots": [
+        { "number": 1, "x": 40, "y": 15 },
+        { "number": 2, "x": 60, "y": 15 },
+        { "number": 3, "x": 45, "y": 35 },
+        { "number": 4, "x": 55, "y": 35 },
+        { "number": 5, "x": 35, "y": 55 },
+        { "number": 6, "x": 50, "y": 55 },
+        { "number": 7, "x": 30, "y": 75 },
+        { "number": 8, "x": 45, "y": 75 },
+        { "number": 9, "x": 40, "y": 45 },
+        { "number": 10, "x": 50, "y": 25 }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Butterfly",
+      "difficulty": "hard",
+      "dots": [
+        { "number": 1, "x": 50, "y": 20 },
+        { "number": 2, "x": 35, "y": 30 },
+        { "number": 3, "x": 25, "y": 45 },
+        { "number": 4, "x": 35, "y": 50 },
+        { "number": 5, "x": 50, "y": 45 },
+        { "number": 6, "x": 65, "y": 50 },
+        { "number": 7, "x": 75, "y": 45 },
+        { "number": 8, "x": 65, "y": 30 },
+        { "number": 9, "x": 50, "y": 35 },
+        { "number": 10, "x": 35, "y": 60 },
+        { "number": 11, "x": 25, "y": 75 },
+        { "number": 12, "x": 50, "y": 65 },
+        { "number": 13, "x": 75, "y": 75 },
+        { "number": 14, "x": 65, "y": 60 }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Rocket",
+      "difficulty": "medium",
+      "dots": [
+        { "number": 1, "x": 50, "y": 15 },
+        { "number": 2, "x": 60, "y": 30 },
+        { "number": 3, "x": 55, "y": 40 },
+        { "number": 4, "x": 55, "y": 65 },
+        { "number": 5, "x": 65, "y": 75 },
+        { "number": 6, "x": 50, "y": 70 },
+        { "number": 7, "x": 35, "y": 75 },
+        { "number": 8, "x": 45, "y": 65 },
+        { "number": 9, "x": 45, "y": 40 },
+        { "number": 10, "x": 40, "y": 30 }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Fish",
+      "difficulty": "medium",
+      "dots": [
+        { "number": 1, "x": 20, "y": 50 },
+        { "number": 2, "x": 35, "y": 35 },
+        { "number": 3, "x": 55, "y": 30 },
+        { "number": 4, "x": 75, "y": 40 },
+        { "number": 5, "x": 85, "y": 50 },
+        { "number": 6, "x": 75, "y": 60 },
+        { "number": 7, "x": 55, "y": 70 },
+        { "number": 8, "x": 35, "y": 65 },
+        { "number": 9, "x": 45, "y": 50 },
+        { "number": 10, "x": 35, "y": 50 }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Crown",
+      "difficulty": "hard",
+      "dots": [
+        { "number": 1, "x": 20, "y": 70 },
+        { "number": 2, "x": 25, "y": 50 },
+        { "number": 3, "x": 35, "y": 40 },
+        { "number": 4, "x": 45, "y": 50 },
+        { "number": 5, "x": 50, "y": 30 },
+        { "number": 6, "x": 55, "y": 50 },
+        { "number": 7, "x": 65, "y": 40 },
+        { "number": 8, "x": 75, "y": 50 },
+        { "number": 9, "x": 80, "y": 70 },
+        { "number": 10, "x": 65, "y": 70 },
+        { "number": 11, "x": 50, "y": 65 },
+        { "number": 12, "x": 35, "y": 70 }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Flower",
+      "difficulty": "hard",
+      "dots": [
+        { "number": 1, "x": 50, "y": 20 },
+        { "number": 2, "x": 65, "y": 30 },
+        { "number": 3, "x": 70, "y": 45 },
+        { "number": 4, "x": 65, "y": 60 },
+        { "number": 5, "x": 50, "y": 65 },
+        { "number": 6, "x": 35, "y": 60 },
+        { "number": 7, "x": 30, "y": 45 },
+        { "number": 8, "x": 35, "y": 30 },
+        { "number": 9, "x": 50, "y": 35 },
+        { "number": 10, "x": 50, "y": 50 },
+        { "number": 11, "x": 50, "y": 70 },
+        { "number": 12, "x": 45, "y": 80 },
+        { "number": 13, "x": 55, "y": 80 }
       ]
     }
   ]
