@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  touch-action: none;
+}
+
+h1 {
+  display: block;
+}
+
+#__next {
+  height: 100%;
+  width: 100%;
+  background: transparent;
+}
+
+@keyframes backgroundScroll {
+  from {
+    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+  }
+  to {
+    background-position: 1000px 1000px, 1040px 1060px, 1130px 1270px, 1070px 1100px;
+  }
+}
+
+@keyframes floatFade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.8);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-float-fade {
+  animation: floatFade 2s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.5s ease-in-out;
+}
+
+/* Responsive styles */
+@media (max-height: 600px) {
+  .w-14 {
+    width: 2.5rem !important;
+  }
+
+  .h-14 {
+    height: 2.5rem !important;
+  }
+
+  .w-8 {
+    width: 1.5rem !important;
+  }
+
+  .h-8 {
+    height: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+
+  .text-3xl {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Touch-specific styles */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:shadow-xl:hover {
+    box-shadow: none !important;
+  }
+
+  .hover\:-translate-y-1:hover {
+    transform: none !important;
+  }
+
+  .active\:translate-y-0:active {
+    transform: none !important;
+  }
+
+  * {
+    touch-action: manipulation;
+  }
+
+  .touch-none {
+    touch-action: none;
+  }
+}
