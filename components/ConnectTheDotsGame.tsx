@@ -83,9 +83,17 @@ export function ConnectTheDotsGame() {
         audioRefs.current[name] = new Audio(gameConfig.audio[name])
         audioRefs.current[name].loop = loop
       }
-      audioRefs.current[name].play().catch((error) => {
-        console.error(`Error playing audio ${name}:`, error)
-      })
+
+      // Only play if the audio isn't already playing
+      if (audioRefs.current[name].paused || name === "connect") {
+        // For connect sound, reset and play from beginning
+        if (name === "connect") {
+          audioRefs.current[name].currentTime = 0
+        }
+        audioRefs.current[name].play().catch((error) => {
+          console.error(`Error playing audio ${name}:`, error)
+        })
+      }
     }
   }
 
@@ -329,6 +337,9 @@ export function ConnectTheDotsGame() {
       setLines((prev) => [...prev, { start: startPosition, end: endPosition }])
       setConnectedDots((prev) => [...prev, startDot.number])
 
+      // Play connect sound only once when a connection is made
+      playAudio("connect")
+
       if (hoveredDot.number === 1 && nextDotNumber === currentShape.dots.length) {
         // Shape completed (connected back to start)
         setConnectedDots((prev) => [...prev, hoveredDot.number])
@@ -365,8 +376,6 @@ export function ConnectTheDotsGame() {
           end: { x, y },
           startDot: hoveredDot,
         })
-
-        playAudio("connect")
       }
     }
   }
@@ -389,6 +398,9 @@ export function ConnectTheDotsGame() {
 
         setLines((prev) => [...prev, { start: startPosition, end: endPosition }])
         setConnectedDots((prev) => [...prev, startDot.number])
+
+        // Play connect sound only once when a connection is made
+        playAudio("connect")
 
         if (endDot.number === 1 && nextDotNumber === currentShape.dots.length) {
           // Shape completed (connected back to start)
@@ -426,8 +438,6 @@ export function ConnectTheDotsGame() {
             end: newPosition,
             startDot: endDot,
           })
-
-          playAudio("connect")
         }
       } else {
         // Wrong connection
@@ -565,34 +575,35 @@ export function ConnectTheDotsGame() {
           )}
 
           {/* Dots */}
-          {currentShape.dots
-            .filter((dot, index, array) => {
-              // Remove duplicate dots (like the closing dot that returns to start)
-              return index === array.findIndex((d) => d.x === dot.x && d.y === dot.y)
-            })
-            .map((dot, index) => (
-              <div
-                key={index}
-                className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold transition-all duration-300 transform pointer-events-none ${
-                  connectedDots.includes(dot.number)
-                    ? "bg-green-500 text-white shadow-lg scale-110"
-                    : dot.number === nextDotNumber && !isDrawing
-                      ? "bg-yellow-400 text-black shadow-lg animate-pulse"
-                      : isDrawing && startDot?.number === dot.number
-                        ? "bg-blue-500 text-white shadow-lg scale-110"
-                        : "bg-white text-black shadow-md"
-                } ${showShapeImage ? "z-30" : "z-20"}`}
-                style={{
-                  left: `${dot.x}%`,
-                  top: `${dot.y}%`,
-                  transform: `translate(-50%, -50%) ${connectedDots.includes(dot.number) || dot.number === nextDotNumber ? "scale(1.1)" : "scale(1)"}`,
-                  touchAction: "none",
-                }}
-                aria-label={`Dot number ${dot.number}`}
-              >
-                {dot.number}
-              </div>
-            ))}
+          {!showShapeImage &&
+            currentShape.dots
+              .filter((dot, index, array) => {
+                // Remove duplicate dots (like the closing dot that returns to start)
+                return index === array.findIndex((d) => d.x === dot.x && d.y === dot.y)
+              })
+              .map((dot, index) => (
+                <div
+                  key={index}
+                  className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold transition-all duration-300 transform pointer-events-none ${
+                    connectedDots.includes(dot.number)
+                      ? "bg-green-500 text-white shadow-lg scale-110"
+                      : dot.number === nextDotNumber && !isDrawing
+                        ? "bg-yellow-400 text-black shadow-lg animate-pulse"
+                        : isDrawing && startDot?.number === dot.number
+                          ? "bg-blue-500 text-white shadow-lg scale-110"
+                          : "bg-white text-black shadow-md"
+                  } ${showShapeImage ? "z-30" : "z-20"}`}
+                  style={{
+                    left: `${dot.x}%`,
+                    top: `${dot.y}%`,
+                    transform: `translate(-50%, -50%) ${connectedDots.includes(dot.number) || dot.number === nextDotNumber ? "scale(1.1)" : "scale(1)"}`,
+                    touchAction: "none",
+                  }}
+                  aria-label={`Dot number ${dot.number}`}
+                >
+                  {dot.number}
+                </div>
+              ))}
 
           {/* SVG for lines */}
           <svg
@@ -600,19 +611,20 @@ export function ConnectTheDotsGame() {
             className={`absolute inset-0 w-full h-full pointer-events-none ${showShapeImage ? "z-10" : "z-10"}`}
             style={{ touchAction: "none" }}
           >
-            {lines.map((line, index) => (
-              <line
-                key={`line-${index}`}
-                x1={line.start.x}
-                y1={line.start.y}
-                x2={line.end.x}
-                y2={line.end.y}
-                stroke="#22c55e"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-            ))}
-            {currentLine && isDrawing && (
+            {!showShapeImage &&
+              lines.map((line, index) => (
+                <line
+                  key={`line-${index}`}
+                  x1={line.start.x}
+                  y1={line.start.y}
+                  x2={line.end.x}
+                  y2={line.end.y}
+                  stroke="#22c55e"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+              ))}
+            {!showShapeImage && currentLine && isDrawing && (
               <line
                 x1={currentLine.start.x}
                 y1={currentLine.start.y}
