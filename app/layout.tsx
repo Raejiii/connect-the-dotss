@@ -6,9 +6,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Connect the Dots Game",
-  description: "Connect numbered dots to reveal shapes",
-    generator: 'v0.dev'
+  title: "Labelling Game",
+  description: "Drag labels to their correct positions on images",
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
