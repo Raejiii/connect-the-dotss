@@ -1,5 +1,5 @@
-import GameWrapper from "../components/game-wrapper"
+import App from "../src/App"
 
-export default function Home() {
-  return <GameWrapper />
+export default function Page() {
+  return <App />
 }
