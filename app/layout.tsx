@@ -1,35 +1,33 @@
-import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
-import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Spot the Differences Game',
+  description: 'A fun game to find differences between two images',
+  openGraph: {
+    title: 'Spot the Differences Game',
+    description: 'A fun game to find differences between two images',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Spot the Differences Game',
+    description: 'A fun game to find differences between two images',
+  },
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
     <html lang="en">
-      <head>
-        <style>{`
-html {
-  font-family: ${GeistSans.style.fontFamily};
-  --font-sans: ${GeistSans.variable};
-  --font-mono: ${GeistMono.variable};
-}
-        `}</style>
-      </head>
-      <body>
-        {children}
-        <Analytics />
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
