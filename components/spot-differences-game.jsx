@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX, Check } from "lucide-react"
 import confetti from "canvas-confetti"
-import gameConfig from "../config/game-config.json"
+import gameConfig from "../config/game-config" // Updated import to use TypeScript config file instead of JSON
 import { FoundMarker } from "./found-marker"
 
 const audioFiles = {
