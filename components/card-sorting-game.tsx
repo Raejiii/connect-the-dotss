@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX, Check } from "lucide-react"
 import confetti from "canvas-confetti"
-import gameConfig from "../config/game-config.json"
+import { gameConfig } from "../config/game-config"
 
 const audioFiles = {
   background:
