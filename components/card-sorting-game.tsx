@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX, Check } from "lucide-react"
 import confetti from "canvas-confetti"
 import gameConfig from "../config/game-config.json"
@@ -21,10 +21,14 @@ const SPLASH_LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5(1
 
 export function CardSortingGame() {
   const [showSplash, setShowSplash] = useState(true)
-  const currentScene =
-    gameConfig.gameType === "words"
-      ? gameConfig.scenes[0] || gameConfig.scenes[0]
-      : gameConfig.scenes[1] || gameConfig.scenes[0]
+
+  const currentScene = useMemo(() => {
+    if (gameConfig.gameType === "words") {
+      return gameConfig.scenes[0]
+    } else {
+      return gameConfig.scenes[1] || gameConfig.scenes[0]
+    }
+  }, [])
 
   const [gameState, setGameState] = useState("start")
   const [showOverlay, setShowOverlay] = useState(true)
