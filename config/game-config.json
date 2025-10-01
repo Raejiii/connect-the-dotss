@@ -1,5 +1,38 @@
 {
+  "gameType": "words",
   "scenes": [
+    {
+      "id": "sentence-order",
+      "question": "Arrange the words to form a correct sentence.",
+      "hint": "Think about proper English sentence structure: subject, verb, object.",
+      "cards": [
+        {
+          "id": "word1",
+          "name": "cat"
+        },
+        {
+          "id": "word2",
+          "name": "The"
+        },
+        {
+          "id": "word3",
+          "name": "mat"
+        },
+        {
+          "id": "word4",
+          "name": "on"
+        },
+        {
+          "id": "word5",
+          "name": "the"
+        },
+        {
+          "id": "word6",
+          "name": "sat"
+        }
+      ],
+      "correctOrder": ["word2", "word1", "word6", "word4", "word5", "word3"]
+    },
     {
       "id": "ancient-games",
       "question": "Sort from the oldest to the most recent.",

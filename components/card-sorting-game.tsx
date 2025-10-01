@@ -21,7 +21,7 @@ const SPLASH_LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5(1
 
 export function CardSortingGame() {
   const [showSplash, setShowSplash] = useState(true)
-  const [currentScene] = useState(gameConfig.scenes[0])
+  const [currentScene] = useState(gameConfig.gameType === "words" ? gameConfig.scenes[0] : gameConfig.scenes[1])
   const [gameState, setGameState] = useState("start")
   const [showOverlay, setShowOverlay] = useState(true)
   const [showSidebar, setShowSidebar] = useState(false)
@@ -387,7 +387,7 @@ export function CardSortingGame() {
                 onTouchEnd={handleTouchEnd}
                 className={`
                   sortable-card relative bg-white rounded-xl shadow-lg overflow-hidden cursor-move transition-all duration-200
-                  w-32 h-40 sm:w-36 sm:h-44 md:w-40 md:h-48 flex-shrink-0
+                  ${gameConfig.gameType === "words" ? "w-32 h-24 sm:w-36 sm:h-28 md:w-40 md:h-32" : "w-32 h-40 sm:w-36 sm:h-44 md:w-40 md:h-48"} flex-shrink-0
                   ${gameState === "playing" ? "hover:shadow-xl hover:scale-105 active:scale-110 active:shadow-2xl" : ""}
                   ${dragOverIndex === index ? "ring-4 ring-blue-400 scale-105" : ""}
                   ${touchDraggedCard?.index === index ? "opacity-50 scale-110" : ""}
@@ -399,21 +399,27 @@ export function CardSortingGame() {
                   WebkitUserSelect: "none",
                 }}
               >
-                <div className="h-24 sm:h-28 md:h-32 relative overflow-hidden">
-                  <img
-                    src={card.image || "/placeholder.svg"}
-                    alt={card.name}
-                    className="w-full h-full object-cover pointer-events-none"
-                    draggable={false}
-                  />
-                  {isCorrect && (
-                    <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                      <Check className="w-6 h-6 text-green-600" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-2 text-center flex-1 flex items-center justify-center">
-                  <h3 className="font-semibold text-gray-800 text-xs sm:text-sm leading-tight pointer-events-none">
+                {gameConfig.gameType !== "words" && (
+                  <div className="h-24 sm:h-28 md:h-32 relative overflow-hidden">
+                    <img
+                      src={card.image || "/placeholder.svg"}
+                      alt={card.name}
+                      className="w-full h-full object-cover pointer-events-none"
+                      draggable={false}
+                    />
+                    {isCorrect && (
+                      <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                        <Check className="w-6 h-6 text-green-600" />
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div
+                  className={`text-center flex items-center justify-center ${gameConfig.gameType === "words" ? "flex-1 p-4" : "p-2 flex-1"}`}
+                >
+                  <h3
+                    className={`font-bold text-gray-800 leading-tight pointer-events-none ${gameConfig.gameType === "words" ? "text-2xl sm:text-3xl md:text-4xl" : "text-xs sm:text-sm font-semibold"}`}
+                  >
                     {card.name}
                   </h3>
                 </div>
@@ -431,16 +437,24 @@ export function CardSortingGame() {
               transform: "scale(1.1) rotate(5deg)",
             }}
           >
-            <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-32 h-40 sm:w-36 sm:h-44 opacity-90 ring-4 ring-blue-400">
-              <div className="h-24 sm:h-28 relative overflow-hidden">
-                <img
-                  src={touchDraggedCard.card.image || "/placeholder.svg"}
-                  alt={touchDraggedCard.card.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-2 text-center flex-1 flex items-center justify-center">
-                <h3 className="font-semibold text-gray-800 text-xs sm:text-sm leading-tight">
+            <div
+              className={`bg-white rounded-xl shadow-2xl overflow-hidden ${gameConfig.gameType === "words" ? "w-32 h-24 sm:w-36 sm:h-28" : "w-32 h-40 sm:w-36 sm:h-44"} opacity-90 ring-4 ring-blue-400`}
+            >
+              {gameConfig.gameType !== "words" && (
+                <div className="h-24 sm:h-28 relative overflow-hidden">
+                  <img
+                    src={touchDraggedCard.card.image || "/placeholder.svg"}
+                    alt={touchDraggedCard.card.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div
+                className={`text-center flex items-center justify-center ${gameConfig.gameType === "words" ? "flex-1 p-4" : "p-2 flex-1"}`}
+              >
+                <h3
+                  className={`font-bold text-gray-800 leading-tight ${gameConfig.gameType === "words" ? "text-2xl sm:text-3xl" : "text-xs sm:text-sm font-semibold"}`}
+                >
                   {touchDraggedCard.card.name}
                 </h3>
               </div>
