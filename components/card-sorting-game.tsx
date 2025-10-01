@@ -21,7 +21,11 @@ const SPLASH_LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5(1
 
 export function CardSortingGame() {
   const [showSplash, setShowSplash] = useState(true)
-  const [currentScene] = useState(gameConfig.gameType === "words" ? gameConfig.scenes[0] : gameConfig.scenes[1])
+  const currentScene =
+    gameConfig.gameType === "words"
+      ? gameConfig.scenes[0] || gameConfig.scenes[0]
+      : gameConfig.scenes[1] || gameConfig.scenes[0]
+
   const [gameState, setGameState] = useState("start")
   const [showOverlay, setShowOverlay] = useState(true)
   const [showSidebar, setShowSidebar] = useState(false)
