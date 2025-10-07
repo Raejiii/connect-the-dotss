@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useMemo } from "react"
-import { Pause, Play, RotateCcw, HelpCircle, Music, VolumeX, Check } from "lucide-react"
+import { Play, RotateCcw, HelpCircle, Music, VolumeX } from "lucide-react"
 import confetti from "canvas-confetti"
 import { gameConfig } from "../config/game-config"
 
@@ -44,6 +44,8 @@ export function CardSortingGame() {
   const [touchDraggedCard, setTouchDraggedCard] = useState(null)
   const [touchPosition, setTouchPosition] = useState({ x: 0, y: 0 })
   const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 })
+  const [catWalking, setCatWalking] = useState(false)
+  const [catPosition, setCatPosition] = useState(0)
   const cardRefs = useRef([])
   const audioRefs = useRef({})
 
@@ -159,6 +161,8 @@ export function CardSortingGame() {
     setShowOverlay(true)
     setShowSidebar(false)
     setIsCorrect(false)
+    setCatWalking(false)
+    setCatPosition(0)
     stopAllAudio()
     setCurrentHint("")
   }
@@ -219,12 +223,29 @@ export function CardSortingGame() {
       playAudio("levelWin")
       playAudio("clap")
       pauseAudio("background")
-      playBigConfetti()
+
+      setTimeout(() => {
+        setCatWalking(true)
+        let progress = 0
+        const walkInterval = setInterval(() => {
+          progress += 1
+          setCatPosition(progress)
+          if (progress >= 100) {
+            clearInterval(walkInterval)
+            setCatWalking(false)
+          }
+        }, 15) // 15ms * 100 = 1500ms = 1.5 seconds
+      }, 500)
+
+      setTimeout(() => {
+        playBigConfetti()
+      }, 2000) // 500ms delay + 1500ms animation = 2000ms
+
       setFloatingText({ text: "Perfect! Well done!", show: true })
       setTimeout(() => {
         setFloatingText({ text: "", show: false })
         setShowOverlay(true)
-      }, 2000)
+      }, 10000)
     } else {
       playAudio("incorrect")
       setFloatingText({ text: "Not quite right, try again!", show: true })
@@ -276,7 +297,6 @@ export function CardSortingGame() {
     const touch = e.touches[0]
     setTouchPosition({ x: touch.clientX, y: touch.clientY })
 
-    // Determine which card we're hovering over
     const elements = document.elementsFromPoint(touch.clientX, touch.clientY)
     const cardElement = elements.find((el) => el.classList.contains("sortable-card"))
 
@@ -358,81 +378,148 @@ export function CardSortingGame() {
 
   return (
     <div className="fixed inset-0 overflow-hidden animate-fade-in">
-      {/* Themed background */}
-      <div
-        className="fixed inset-0 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 pointer-events-none"
-        style={{
-          backgroundImage: `
-            url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
-          `,
-          backgroundSize: "80px 80px",
-          backgroundPosition: "0 0",
-          animation: "backgroundScroll 60s linear infinite",
-        }}
-      />
+      <div className="fixed inset-0 bg-gradient-to-b from-sky-300 via-sky-200 to-sky-400 pointer-events-none" />
+
+      {/* Falling snow particles */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white opacity-70"
+            style={{
+              width: `${Math.random() * 8 + 2}px`,
+              height: `${Math.random() * 8 + 2}px`,
+              left: `${Math.random() * 100}%`,
+              top: `-${Math.random() * 20}%`,
+              animation: `snowfall ${Math.random() * 10 + 10}s linear infinite`,
+              animationDelay: `${Math.random() * 10}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Mountain layers */}
+      <div className="fixed bottom-0 left-0 right-0 pointer-events-none">
+        {/* Back mountain layer */}
+        <svg
+          className="absolute bottom-0 w-full"
+          viewBox="0 0 1440 400"
+          preserveAspectRatio="none"
+          style={{ height: "400px" }}
+        >
+          <path d="M0,400 L0,200 L360,100 L720,200 L1080,100 L1440,200 L1440,400 Z" fill="#5B9BD5" opacity="0.6" />
+          <path d="M360,100 L320,120 L400,120 Z" fill="white" opacity="0.9" />
+          <path d="M1080,100 L1040,120 L1120,120 Z" fill="white" opacity="0.9" />
+        </svg>
+
+        {/* Front mountain layer */}
+        <svg
+          className="absolute bottom-0 w-full"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+          style={{ height: "320px" }}
+        >
+          <path
+            d="M0,320 L0,160 L240,80 L480,160 L720,60 L960,160 L1200,80 L1440,160 L1440,320 Z"
+            fill="#4A90D9"
+            opacity="0.8"
+          />
+          <path d="M240,80 L200,100 L280,100 Z" fill="white" opacity="0.95" />
+          <path d="M720,60 L680,80 L760,80 Z" fill="white" opacity="0.95" />
+          <path d="M1200,80 L1160,100 L1240,100 Z" fill="white" opacity="0.95" />
+        </svg>
+      </div>
 
       <div className="w-full h-full relative flex flex-col items-center justify-center z-10 p-4">
-        {/* Question header */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-3 text-center shadow-lg z-50 max-w-2xl">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">{currentScene.question}</h2>
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col items-center gap-2">
+          <img src="/images/game-logo.png" alt="Line-Up Game" className="h-12 md:h-16 w-auto object-contain" />
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-3 text-center shadow-lg max-w-2xl">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">{currentScene.question}</h2>
+          </div>
         </div>
 
-        {/* Main game area */}
         <div className="relative w-full max-w-7xl mx-auto mt-20 mb-20">
-          <div className="flex flex-wrap justify-center gap-3 px-4 min-h-[200px]">
-            {cardOrder.map((card, index) => (
-              <div
-                key={card.id}
-                ref={(el) => (cardRefs.current[index] = el)}
-                data-index={index}
-                draggable={gameState === "playing"}
-                onDragStart={(e) => handleDragStart(e, card, index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, index)}
-                onTouchStart={(e) => handleTouchStart(e, card, index)}
-                onTouchMove={(e) => handleTouchMove(e, index)}
-                onTouchEnd={handleTouchEnd}
-                className={`
-                  sortable-card relative bg-white rounded-xl shadow-lg overflow-hidden cursor-move transition-all duration-200
-                  ${gameConfig.gameType === "words" ? "w-32 h-24 sm:w-36 sm:h-28 md:w-40 md:h-32" : "w-32 h-40 sm:w-36 sm:h-44 md:w-40 md:h-48"} flex-shrink-0
-                  ${gameState === "playing" ? "hover:shadow-xl hover:scale-105 active:scale-110 active:shadow-2xl" : ""}
-                  ${dragOverIndex === index ? "ring-4 ring-blue-400 scale-105" : ""}
-                  ${touchDraggedCard?.index === index ? "opacity-50 scale-110" : ""}
-                  ${isCorrect ? "ring-4 ring-green-400" : ""}
-                `}
+          <div className="relative flex items-center justify-center gap-4 px-4">
+            <div className="relative flex-shrink-0 z-10 -mt-32">
+              <img src="/images/platform.png" alt="Platform" className="w-24 h-20 object-contain" />
+              <img
+                src="/images/cat.png"
+                alt="Cat"
+                className="absolute -top-[60px] left-1/2 w-16 h-16 object-contain transition-all duration-300 z-50"
                 style={{
-                  touchAction: gameState === "playing" ? "none" : "auto",
-                  userSelect: "none",
-                  WebkitUserSelect: "none",
+                  transform: catWalking
+                    ? `translateX(${catPosition * 8}px) translateY(0px)`
+                    : "translateX(-50%) translateY(0px)",
+                  left: catWalking ? "50%" : "50%",
                 }}
-              >
-                {gameConfig.gameType !== "words" && (
-                  <div className="h-24 sm:h-28 md:h-32 relative overflow-hidden">
-                    <img
-                      src={card.image || "/placeholder.svg"}
-                      alt={card.name}
-                      className="w-full h-full object-cover pointer-events-none"
-                      draggable={false}
-                    />
-                    {isCorrect && (
-                      <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                        <Check className="w-6 h-6 text-green-600" />
-                      </div>
-                    )}
-                  </div>
-                )}
+              />
+            </div>
+
+            <div className="flex justify-center gap-3 min-h-[280px] items-center flex-1 relative z-0">
+              {cardOrder.map((card, index) => (
                 <div
-                  className={`text-center flex items-center justify-center ${gameConfig.gameType === "words" ? "flex-1 p-4" : "p-2 flex-1"}`}
+                  key={card.id}
+                  ref={(el) => (cardRefs.current[index] = el)}
+                  data-index={index}
+                  draggable={gameState === "playing"}
+                  onDragStart={(e) => handleDragStart(e, card, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onTouchStart={(e) => handleTouchStart(e, card, index)}
+                  onTouchMove={(e) => handleTouchMove(e, index)}
+                  onTouchEnd={handleTouchEnd}
+                  className={`
+                    sortable-card relative bg-white rounded-xl shadow-lg overflow-hidden cursor-move transition-all duration-500
+                    ${gameConfig.gameType === "words" ? "w-32 h-24 sm:w-36 sm:h-28 md:w-40 md:h-32" : "w-32 h-40 sm:w-36 sm:h-44 md:w-40 md:h-48"} flex-shrink-0
+                    ${gameState === "playing" ? "hover:shadow-xl hover:scale-105 active:scale-110 active:shadow-2xl" : ""}
+                    ${dragOverIndex === index ? "ring-4 ring-blue-400 scale-105" : ""}
+                    ${touchDraggedCard?.index === index ? "opacity-50 scale-110" : ""}
+                    ${isCorrect ? "ring-4 ring-green-400" : ""}
+                  `}
+                  style={{
+                    transform: isCorrect ? "translateY(0)" : index % 2 === 0 ? "translateY(-40px)" : "translateY(40px)",
+                    touchAction: gameState === "playing" ? "none" : "auto",
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
+                  }}
                 >
-                  <h3
-                    className={`font-bold text-gray-800 leading-tight pointer-events-none ${gameConfig.gameType === "words" ? "text-2xl sm:text-3xl md:text-4xl" : "text-xs sm:text-sm font-semibold"}`}
+                  {gameConfig.gameType !== "words" && (
+                    <div className="h-24 sm:h-28 md:h-32 relative overflow-hidden">
+                      <img
+                        src={card.image || "/placeholder.svg"}
+                        alt={card.name}
+                        className="w-full h-full object-cover pointer-events-none"
+                        draggable={false}
+                      />
+                      {isCorrect && (
+                        <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                          <img src="/images/done-button.png" alt="Done" className="w-12 h-12 object-contain" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div
+                    className={`text-center flex items-center justify-center ${gameConfig.gameType === "words" ? "flex-1 p-4" : "p-2 flex-1"}`}
                   >
-                    {card.name}
-                  </h3>
+                    <h3
+                      className={`font-bold text-gray-800 leading-tight pointer-events-none ${gameConfig.gameType === "words" ? "text-2xl sm:text-3xl md:text-4xl" : "text-xs sm:text-sm font-semibold"}`}
+                    >
+                      {card.name}
+                    </h3>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            <div className="relative flex-shrink-0 z-10 -mt-32">
+              <img src="/images/platform.png" alt="Platform" className="w-24 h-20 object-contain" />
+              <img
+                src="/images/ice-cream.png"
+                alt="Ice Cream"
+                className="absolute -top-[60px] left-1/2 transform -translate-x-1/2 w-16 h-16 object-contain z-50"
+              />
+            </div>
           </div>
         </div>
 
@@ -446,7 +533,7 @@ export function CardSortingGame() {
             }}
           >
             <div
-              className={`bg-white rounded-xl shadow-2xl overflow-hidden ${gameConfig.gameType === "words" ? "w-32 h-24 sm:w-36 sm:h-28" : "w-32 h-40 sm:w-36 sm:h-44"} opacity-90 ring-4 ring-blue-400`}
+              className={`bg-white rounded-xl shadow-2xl overflow-hidden ${gameConfig.gameType === "words" ? "w-32 h-24 sm:w-36 sm:h-28" : "w-32 h-40 sm:w-36 sm:h-44 md:w-40 md:h-48"} opacity-90 ring-4 ring-blue-400`}
             >
               {gameConfig.gameType !== "words" && (
                 <div className="h-24 sm:h-28 relative overflow-hidden">
@@ -470,65 +557,48 @@ export function CardSortingGame() {
           </div>
         )}
 
-        {/* Check answer button */}
         {gameState === "playing" && (
           <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-            <button
-              onClick={checkAnswer}
-              className="w-16 h-16 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg transition-colors"
-              aria-label="Check answer"
-            >
-              <Check className="w-8 h-8 text-white" />
+            <button onClick={checkAnswer} className="hover:scale-105 transition-transform" aria-label="Check answer">
+              <img src="/images/done-button.png" alt="Done" className="w-24 h-16 object-contain drop-shadow-lg" />
             </button>
           </div>
         )}
 
-        {/* Control buttons container */}
-        <div
-          className={`fixed top-0 left-0 bottom-0 flex items-start z-[60] transition-all duration-300 ${
-            showSidebar ? "w-20 md:w-24 lg:w-32 bg-violet-500" : "w-14 md:w-16 lg:w-20"
-          }`}
-        >
-          <div className="h-full flex flex-col items-center pt-4 gap-6">
-            <button
-              onClick={togglePause}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-violet-500 hover:bg-violet-600 flex items-center justify-center transition-colors shadow-lg"
-              aria-label={showSidebar ? "Resume game" : "Pause game"}
-            >
-              {showSidebar ? (
+        {showSidebar && (
+          <div className="fixed top-0 left-0 bottom-0 flex items-start z-[60] transition-all duration-300 w-20 md:w-24 lg:w-32 bg-violet-500">
+            <div className="h-full flex flex-col items-center pt-4 gap-6">
+              <button
+                onClick={togglePause}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-violet-500 hover:bg-violet-600 flex items-center justify-center transition-colors shadow-lg"
+                aria-label="Resume game"
+              >
                 <Play className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
-              ) : (
-                <Pause className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
-              )}
-            </button>
-            {showSidebar && (
-              <>
-                <button
-                  onClick={toggleMute}
-                  className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${
-                    isMuted ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
-                  } flex items-center justify-center transition-colors shadow-lg`}
-                  aria-label={isMuted ? "Unmute" : "Mute"}
-                >
-                  {isMuted ? (
-                    <VolumeX className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                  ) : (
-                    <Music className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                  )}
-                </button>
-                <button
-                  onClick={resetGame}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center transition-colors shadow-lg"
-                  aria-label="Reset game"
-                >
-                  <RotateCcw className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                </button>
-              </>
-            )}
+              </button>
+              <button
+                onClick={toggleMute}
+                className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${
+                  isMuted ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+                } flex items-center justify-center transition-colors shadow-lg`}
+                aria-label={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                ) : (
+                  <Music className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                )}
+              </button>
+              <button
+                onClick={resetGame}
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center transition-colors shadow-lg"
+                aria-label="Reset game"
+              >
+                <RotateCcw className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Help button */}
         <button
           onClick={showHelp}
           className="fixed top-4 right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center transition-colors shadow-lg z-[60]"
@@ -537,14 +607,12 @@ export function CardSortingGame() {
           <HelpCircle className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
         </button>
 
-        {/* Hint text */}
         {currentHint && (
           <div className="fixed top-32 left-1/2 transform -translate-x-1/2 bg-yellow-100 border-2 border-yellow-400 rounded-lg px-6 py-3 text-lg font-medium shadow-lg z-50 max-w-md text-center">
             💡 {currentHint}
           </div>
         )}
 
-        {/* Floating text for feedback */}
         {floatingText.show && (
           <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-[70]">
             <div
@@ -559,7 +627,6 @@ export function CardSortingGame() {
           </div>
         )}
 
-        {/* Overlays */}
         {showOverlay && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[80]">
             <div className="bg-white p-6 sm:p-8 rounded-xl max-w-sm w-11/12 text-center">

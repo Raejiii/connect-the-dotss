@@ -1,5 +1,5 @@
 export const gameConfig = {
-  gameType: "words" as const,
+  gameType: "pictures" as const,
   scenes: [
     {
       id: "sentence-order",
