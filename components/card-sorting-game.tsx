@@ -432,7 +432,14 @@ export function CardSortingGame() {
 
       <div className="w-full h-full relative flex flex-col items-center justify-center z-10 p-4">
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col items-center gap-2">
-          <img src="/images/game-logo.png" alt="Line-Up Game" className="h-12 md:h-16 w-auto object-contain" />
+          <img
+            src="/images/game-logo.png"
+            alt="Line-Up Game"
+            className="h-12 md:h-16 w-auto object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = "none"
+            }}
+          />
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-3 text-center shadow-lg max-w-2xl">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800">{currentScene.question}</h2>
           </div>
@@ -447,10 +454,7 @@ export function CardSortingGame() {
                 alt="Cat"
                 className="absolute -top-[60px] left-1/2 w-16 h-16 object-contain transition-all duration-300 z-50"
                 style={{
-                  transform: catWalking
-                    ? `translateX(${catPosition * 8}px) translateY(0px)`
-                    : "translateX(-50%) translateY(0px)",
-                  left: catWalking ? "50%" : "50%",
+                  transform: catWalking ? `translateX(calc(-50% + ${catPosition * 8}px))` : "translateX(-50%)",
                 }}
               />
             </div>
@@ -686,5 +690,3 @@ export function CardSortingGame() {
     </div>
   )
 }
-
-export default CardSortingGame
