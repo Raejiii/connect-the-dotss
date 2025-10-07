@@ -6,130 +6,25 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
   height: 100%;
   width: 100%;
-  margin: 0;
-  padding: 0;
   overflow: hidden;
-  background: transparent;
-  touch-action: none;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-.animate-ripple {
-  animation: ripple 1s ease-out forwards;
-}
-
-@keyframes backgroundScroll {
-  from {
-    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
-  }
-  to {
-    background-position: 1000px 1000px, 1040px 1060px, 1130px 1270px, 1070px 1100px;
-  }
-}
-
-@keyframes floatFade {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
-  }
-  20% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  80% {
-    opacity: 1;
-    transform: translateY(-20px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-40px) scale(0.8);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes bounce-gentle {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
 }
 
 @keyframes snowfall {
   0% {
-    transform: translateY(-20vh) translateX(0);
+    transform: translateY(-10px) translateX(0);
     opacity: 0.7;
   }
   50% {
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
     transform: translateY(100vh) translateX(20px);
     opacity: 0.3;
-  }
-}
-
-.animate-bounce-gentle {
-  animation: bounce-gentle 2s ease-in-out infinite;
-}
-
-.animate-float-fade {
-  animation: floatFade 2s ease-out forwards;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.animate-fade-out {
-  animation: fadeOut 0.5s ease-in-out;
-}
-
-/* Improved responsive styles */
-@media (max-height: 600px) {
-  .grid {
-    gap: 1px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .grid {
-    gap: 1px !important;
   }
 }

@@ -1,9 +1,5 @@
-import { CardSortingGame } from "../components/card-sorting-game"
+import { LineUpGame } from "@/components/line-up-game"
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-100">
-      <CardSortingGame />
-    </main>
-  )
+  return <LineUpGame />
 }

@@ -1,77 +1,40 @@
-export const gameConfig = {
-  gameType: "pictures" as const,
+import type { GameConfig } from "@/types/game"
+
+export const gameConfig: GameConfig = {
+  gameType: "pictures",
   scenes: [
     {
-      id: "sentence-order",
-      question: "Arrange the words to form a correct sentence.",
-      hint: "Think about proper English sentence structure: subject, verb, object.",
-      cards: [
-        {
-          id: "word1",
-          name: "cat",
-        },
-        {
-          id: "word2",
-          name: "The",
-        },
-        {
-          id: "word3",
-          name: "mat",
-        },
-        {
-          id: "word4",
-          name: "on",
-        },
-        {
-          id: "word5",
-          name: "the",
-        },
-        {
-          id: "word6",
-          name: "sat",
-        },
-      ],
-      correctOrder: ["word2", "word1", "word6", "word4", "word5", "word3"],
-    },
-    {
-      id: "ancient-games",
+      id: "communication-history",
       question: "Sort from the oldest to the most recent.",
-      hint: "Think about when these games were first invented in history. Some are thousands of years old!",
+      hint: "Think about when these communication methods were invented in history.",
       cards: [
         {
-          id: "backgammon",
-          name: "Backgammon",
-          image: "/images/backgammon.jpg",
+          id: "postmail",
+          name: "Post Mail",
+          image: "/images/postmail.jpg",
         },
         {
-          id: "go",
-          name: "Go",
-          image: "/images/go.jpg",
+          id: "telegraph",
+          name: "Telegraph",
+          image: "/images/telegraph.jpg",
         },
         {
-          id: "chess",
-          name: "Chess",
-          image: "/images/chess.jpg",
+          id: "telephone",
+          name: "Telephone",
+          image: "/images/telephone.jpg",
         },
         {
-          id: "mahjong",
-          name: "Mahjong",
-          image: "/images/mahjong.jpg",
+          id: "radio",
+          name: "Radio",
+          image: "/images/radio.jpg",
         },
         {
-          id: "senet",
-          name: "Senet",
-          image: "/images/senet.jpg",
-        },
-        {
-          id: "dominoes",
-          name: "Dominoes",
-          image: "/images/dominoes.jpg",
+          id: "mobile",
+          name: "Mobile",
+          image: "/images/mobile.jpg",
         },
       ],
-      correctOrder: ["senet", "backgammon", "go", "chess", "mahjong", "dominoes"],
+      correctOrder: ["postmail", "telegraph", "telephone", "radio", "mobile"],
     },
   ],
 }
-
-export default gameConfig
